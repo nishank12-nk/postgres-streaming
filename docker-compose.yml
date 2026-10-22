@@ -1,0 +1,36 @@
+services:
+  pg-primary:
+    image: postgres:16
+    container_name: pg-primary
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5433:5432"
+    volumes:
+      - pg-primary-data:/var/lib/postgresql/data
+    networks:
+      - pgnet
+
+  pg-standby:
+    image: postgres:16
+    container_name: pg-standby
+    restart: unless-stopped
+    depends_on:
+      - pg-primary
+    ports:
+      - "5434:5432"
+    volumes:
+      - pg-standby-data:/var/lib/postgresql/data
+    networks:
+      - pgnet
+
+networks:
+  pgnet:
+    external: true
+
+volumes:
+  pg-primary-data:
+    external: true
+  pg-standby-data:
+    external: true
